@@ -1,0 +1,21 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" name="JDK11 4 Label Check">
+    <output-path>$PROJECT_DIR$/out/artifacts/JDK11_4_Label_Check</output-path>
+    <properties id="javafx-properties">
+      <options>
+        <option name="appClass" value="sample.Main" />
+        <option name="description" value="" />
+        <option name="htmlPlaceholderId" value="" />
+        <option name="nativeBundle" value="all" />
+        <option name="title" value="" />
+        <option name="vendor" value="" />
+        <option name="version" value="" />
+      </options>
+    </properties>
+    <root id="root">
+      <element id="archive" name="JDK11_4_Label_Check.jar">
+        <element id="module-output" name="JDK11 4 Label Check" />
+      </element>
+    </root>
+  </artifact>
+</component>

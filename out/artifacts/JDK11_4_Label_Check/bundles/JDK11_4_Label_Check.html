@@ -1,0 +1,43 @@
+<html><head>
+  <SCRIPT src="http://java.com/js/dtjava.js"></SCRIPT>
+<script>
+    function launchApplication(jnlpfile) {
+        dtjava.launch(            {
+                url : 'JDK11_4_Label_Check.jnlp'
+            },
+            {
+                javafx : '8.0+'
+            },
+            {}
+        );
+        return false;
+    }
+</script>
+
+<script>
+    function javafxEmbedJDK11_4_Label_Check_id() {
+        dtjava.embed(
+            {
+                id : 'JDK11_4_Label_Check_id',
+                url : 'JDK11_4_Label_Check.jnlp',
+                placeholder : 'javafx-app-placeholder',
+                width : '600',
+                height : '400'
+            },
+            {
+                javafx : '8.0+'
+            },
+            {}
+        );
+    }
+    <!-- Embed FX application into web page once page is loaded -->
+    dtjava.addOnloadCallback(javafxEmbedJDK11_4_Label_Check_id);
+</script>
+
+</head><body>
+<h2>Test page for <b>JDK11 4 Label Check</b></h2>
+  <b>Webstart:</b> <a href='JDK11_4_Label_Check.jnlp' onclick="return launchApplication('JDK11_4_Label_Check.jnlp');">click to launch this app as webstart</a><br><hr><br>
+
+  <!-- Applet will be inserted here -->
+  <div id='javafx-app-placeholder'></div>
+</body></html>

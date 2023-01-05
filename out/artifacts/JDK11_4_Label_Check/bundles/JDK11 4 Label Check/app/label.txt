@@ -1,0 +1,30 @@
+<STX>R<ETX>
+<STX><ESC>C<SI>I1<ETX>
+<STX><ESC>P;E3;F3<ETX>
+<STX>H24;o13,0;f0;h51;w40;c25;r0;b0;d3, MATCH OK ;<ETX>
+<STX>H7;o35,143;f0;h1;w1;c21;r0;b0;d3,Chassis Nr.;<ETX>
+<STX>H9;o40,305;f0;h1;w1;c21;r0;b0;d3,Person Barcode;<ETX>
+<STX>H17;o43,467;f0;h1;w1;c21;r0;b0;d3,DateAndTime;<ETX>
+<STX>H6;o34,183;f0;h1;w1;c22;r0;b0;d0,17;<ETX>
+<STX>H21;o34,346;f0;h1;w1;c22;r0;b0;d0,11;<ETX>
+<STX>H16;o42,508;f0;h1;w1;c22;r0;b0;d0,15;<ETX>
+<STX>H22;o42,560;f0;h1;w1;c22;r0;b0;d0,15;<ETX>
+<STX>D0<ETX>
+<STX>R<ETX>
+<STX><ESC>E3,1<CAN><ETX>
+<STX><ESC>F6<LF>5567927<ETX>
+<STX><ESC>F21<LF>L008668<ETX>
+<STX><ESC>F16<LF>2019-9-9<ETX>
+<STX><ESC>F22<LF>15:30:39<ETX>
+<STX><RS>1<US>1<ETB><ETX>
+<STX><ESC>P;E3<ETX>
+<STX>R<ETX>
+;
+;
+;
+;
+;
+;
+;
+;
+;
