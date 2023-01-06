@@ -1,4 +1,4 @@
-Harness Prefix
+Master Label Prefix
 FM
-COM Port
+COM Port for printer
 COM4

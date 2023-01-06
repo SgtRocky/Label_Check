@@ -3,6 +3,7 @@ package sample;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
@@ -21,19 +22,19 @@ import java.util.*;
 public class Controller {
 
     @FXML
-    public TextField harnessOne;
+    private TextField masterLabel;
     @FXML
-    private TextField harnessTwo;
+    public TextField packingLabelOne;
     @FXML
-    private TextField harnessThree;
+    private TextField packingLabelTwo;
     @FXML
-    private TextField harnessFour;
+    private TextField packingLabelThree;
     @FXML
     private Button oK;
     @FXML
-    private TextField ats;
+    private TextField outcome;
     @FXML
-    private TextField tabNr;
+    private TextField userID;
     @FXML
     private TextField tabDisplay;
     @FXML
@@ -41,7 +42,7 @@ public class Controller {
     @FXML
     public Label myTime;
     @FXML
-    public Label lblTimer;
+    public Label labelTimer;
 
     public Scanner scan;
 
@@ -52,54 +53,76 @@ public class Controller {
     public String confLine1;
     public String confLine2;
 
-    public AudioClip soundHorn = new AudioClip(new File("Error.mp3").toURI().toString());
+    public AudioClip soundHorn;
 
 
     String har;
     String tab;
     String date;
     String time;
-    int timer;
+    int entryTimer;
 
     @FXML
     public void initialize() throws IOException {
 
-        File configure = new File("config.txt");
-        File labelConfigure = new File("lblconfig.txt");
+        File configFile = new File("config.txt");
+        File labelConfig = new File("lblconfig.txt");
+        File errorSound = new File("Error.mp3");
+
+
 
         //Checking if config file exists
-        if (!configure.exists()) {
+        if (!errorSound.exists()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            playError();
+            alert.setTitle("Missing Sound Files");
+            alert.setHeaderText("Sound Files Are Missing.");
+            Button okButton = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
+            okButton.setDefaultButton(false);
+            alert.showAndWait();
+        }else{
+            soundHorn = new AudioClip(errorSound.toURI().toString());
+        }
+        if (!configFile.exists()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             playError();
             alert.setTitle("Config File Missing");
             alert.setHeaderText("Config.txt File is missing");
             Button okButton = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
             okButton.setDefaultButton(false);
+            okButton.setOnAction((event) -> Platform.exit());
             alert.showAndWait();
-        } else if (!labelConfigure.exists()) {
+
+
+        }
+        if (!labelConfig.exists()) {
+
             Alert alert = new Alert(Alert.AlertType.ERROR);
             playError();
             alert.setTitle("Config File Missing");
             alert.setHeaderText("lblconfig.txt File is missing");
             Button okButton = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
             okButton.setDefaultButton(false);
+            okButton.setOnAction((event) -> Platform.exit());
             alert.showAndWait();
+
+
+
         }
 
-        scanConf = new Scanner(new File("config.txt"));
-
-        scanSettings();
-        harnessOne.setDisable(true);
-        harnessTwo.setDisable(true);
-        ats.setDisable(true);
+        scanConf = new Scanner(configFile);
+        scanConfig();
+        packingLabelOne.setDisable(true);
+        masterLabel.setDisable(true);
+        outcome.setDisable(true);
         tabDisplay.setDisable(true);
-        harnessThree.setDisable(true);
-        harnessFour.setDisable(true);
-        handleTabNrEnter();
-        handleHarnessOneEnter();
-        handleHarnessTwoEnter();
-        handleHarnessThreeEnter();
-        handleHarnessFourEnter();
+        packingLabelTwo.setDisable(true);
+        packingLabelThree.setDisable(true);
+        handleUserIdEnter();
+        handlePackingOneEnter();
+        handleMasterLabelEnter();
+        handlePackingTwoEnter();
+        handlePackingThreeEnter();
 
 
         //Clock for the interface and the final printed label
@@ -112,126 +135,101 @@ public class Controller {
             int month = cal.get(Calendar.MONTH);
             int day = LocalDate.now().getDayOfMonth();
             month += 1;
-            timer++;
+            entryTimer++;
 
             // Timer is required limits user while scanning to 3 seconds per scan
-            if (timer >= 3) {
-                timer = 3;
+            if (entryTimer >= 3) {
+                entryTimer = 3;
             }
 
             myTime.setText(hour + ":" + minute + ":" + second);
             myTime.setFont(Font.font("Arial", 12));
             myDate.setText(year + "-" + month + "-" + day);
             myDate.setFont(Font.font("Arial", 12));
-            lblTimer.setFont(Font.font("Arial", 60));
-            lblTimer.setText(String.valueOf(timer));
+            labelTimer.setFont(Font.font("Arial", 60));
+            labelTimer.setText(String.valueOf(entryTimer));
         }),
 
 
                 new KeyFrame(Duration.seconds(1)));
         clock.setCycleCount(Animation.INDEFINITE);
         clock.play();
-
-
     }
 
     public void playError() {
-
         soundHorn.play();
     }
 
     //Checking if tab nr is entered correctly with HL prefix and 8 digits
     //If entered correctly unlocks harnessOne text field
-    //Resets timer to progibit scanning
+    //Resets timer to prohibit scanning
     @FXML
     public void textFieldDisable() {
-        int lenth = tabNr.getLength();
+        int lenth = userID.getLength();
         //Checking if tab nr has HL prefix and 8 digits
-        if (tabNr.getText().startsWith("HL") && lenth == 8) {
-            String text = tabNr.getText();
+        if (userID.getText().startsWith("HL") && lenth == 8) {
+            String text = userID.getText();
             boolean disableButtons = text.isEmpty() || text.trim().isEmpty();
-            harnessTwo.setDisable(disableButtons);
-            timer = 0;
+            masterLabel.setDisable(disableButtons);
+            entryTimer = 0;
         }
     }
 
-    //Checking if harnessOne text field is entered
+    //Checking if masterLabel text field is entered
     //If entered unlock harnessTwo field
     //Also add person barcode to display TexField tabDisplay
     @FXML
-    public void onHarnessOneEntered() {
-        String text = harnessTwo.getText();
+    public void onMasterLabelEntered() {
+        String text = masterLabel.getText();
         boolean disableButtons = text.isEmpty() || text.trim().isEmpty();
-        tabNr.setDisable(true);
-        harnessOne.setDisable(disableButtons);
-        text = tabNr.getText();
+        userID.setDisable(true);
+        packingLabelOne.setDisable(disableButtons);
+        text = userID.getText();
         text = text.substring(1);
         tabDisplay.setText(text);
         tabDisplay.setFont(Font.font("Arial", 20));
     }
 
     //Adding prefix to harness code in order to make it match with test label prefix
-    public String harnessAddPrefix(String harn) {
-        String text = harn;
-        String textFinal = confLine1 + text;
-        return textFinal;
+    public String addPrefix(String t) {
+        return confLine1 + t;
     }
 
     //Reset button function deletes all fields and enables tab nr field
     public void reset() {
-        harnessOne.setText("");
-        harnessTwo.setText("");
-        harnessOne.setDisable(true);
-        harnessTwo.setDisable(true);
-        ats.setText("");
-        tabNr.setText("");
+        packingLabelOne.setText("");
+        masterLabel.setText("");
+        packingLabelOne.setDisable(true);
+        masterLabel.setDisable(true);
+        outcome.setText("");
+        userID.setText("");
         tabDisplay.setText("");
-        tabNr.setDisable(false);
-        harnessThree.setDisable(true);
-        harnessFour.setDisable(true);
-        harnessThree.setText("");
-        harnessFour.setText("");
-        timer = 0;
+        userID.setDisable(false);
+        packingLabelTwo.setDisable(true);
+        packingLabelThree.setDisable(true);
+        packingLabelTwo.setText("");
+        packingLabelThree.setText("");
+        entryTimer = 0;
     }
 
-    public void handleTabNrEnter() {
-        tabNr.setOnKeyPressed(keyEvent -> {
+    public void handleUserIdEnter() {
+        userID.setOnKeyPressed(keyEvent -> {
             if (keyEvent.getCode().equals(KeyCode.ENTER)) {
-                harnessTwo.requestFocus();
+                masterLabel.requestFocus();
             }
         });
     }
 
-    public void handleHarnessOneEnter() {
-        harnessOne.setOnKeyPressed(keyEvent -> {
-            if (keyEvent.getCode().equals(KeyCode.ENTER) && timer >= 3) {
-                harnessThree.setDisable(false);
-                harnessThree.requestFocus();
-                harnessThree.setText("");
-                harnessOne.setDisable(true);
-                timer = 0;
-            } else if (timer < 3) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                playError();
-                alert.setTitle("Error");
-                alert.setHeaderText("Please wait 3 seconds before scanning the next label");
-                Button okButton = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
-                okButton.setDefaultButton(false);
-                alert.showAndWait();
-            }
-        });
-    }
+    public void handleMasterLabelEnter() {
+        masterLabel.setOnKeyPressed(keyEvent -> {
+            if (keyEvent.getCode().equals(KeyCode.ENTER) && entryTimer >= 3) {
+                packingLabelOne.setDisable(false);
+                packingLabelOne.requestFocus();
+                packingLabelOne.setText("");
+                masterLabel.setDisable(true);
+                entryTimer = 0;
 
-    public void handleHarnessTwoEnter() {
-        harnessTwo.setOnKeyPressed(keyEvent -> {
-            if (keyEvent.getCode().equals(KeyCode.ENTER) && timer >= 3) {
-                harnessOne.setDisable(false);
-                harnessOne.requestFocus();
-                harnessOne.setText("");
-                harnessTwo.setDisable(true);
-                timer = 0;
-
-            } else if (timer < 3) {
+            } else if (entryTimer < 3) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 playError();
                 alert.setTitle("Error");
@@ -244,15 +242,15 @@ public class Controller {
         });
     }
 
-    public void handleHarnessThreeEnter() {
-        harnessThree.setOnKeyPressed(keyEvent -> {
-            if (keyEvent.getCode().equals(KeyCode.ENTER) && timer >= 3) {
-                harnessFour.setDisable(false);
-                harnessFour.requestFocus();
-                harnessFour.setText("");
-                harnessThree.setDisable(true);
-                timer = 0;
-            } else if (timer < 3) {
+    public void handlePackingOneEnter() {
+        packingLabelOne.setOnKeyPressed(keyEvent -> {
+            if (keyEvent.getCode().equals(KeyCode.ENTER) && entryTimer >= 3) {
+                packingLabelTwo.setDisable(false);
+                packingLabelTwo.requestFocus();
+                packingLabelTwo.setText("");
+                packingLabelOne.setDisable(true);
+                entryTimer = 0;
+            } else if (entryTimer < 3) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 playError();
                 alert.setTitle("Error");
@@ -264,15 +262,37 @@ public class Controller {
         });
     }
 
-    public void handleHarnessFourEnter() {
-        harnessFour.setOnKeyPressed(keyEvent -> {
+
+
+    public void handlePackingTwoEnter() {
+        packingLabelTwo.setOnKeyPressed(keyEvent -> {
+            if (keyEvent.getCode().equals(KeyCode.ENTER) && entryTimer >= 3) {
+                packingLabelThree.setDisable(false);
+                packingLabelThree.requestFocus();
+                packingLabelThree.setText("");
+                packingLabelTwo.setDisable(true);
+                entryTimer = 0;
+            } else if (entryTimer < 3) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                playError();
+                alert.setTitle("Error");
+                alert.setHeaderText("Please wait 3 seconds before scanning the next label");
+                Button okButton = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
+                okButton.setDefaultButton(false);
+                alert.showAndWait();
+            }
+        });
+    }
+
+    public void handlePackingThreeEnter() {
+        packingLabelThree.setOnKeyPressed(keyEvent -> {
             if (keyEvent.getCode().equals(KeyCode.ENTER)) {
                 oK.fire();
-                harnessTwo.setText("");
-                harnessTwo.requestFocus();
-                harnessTwo.setDisable(false);
-                harnessFour.setDisable(true);
-            } else if (timer < 3) {
+                masterLabel.setText("");
+                masterLabel.requestFocus();
+                masterLabel.setDisable(false);
+                packingLabelThree.setDisable(true);
+            } else if (entryTimer < 3) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 playError();
                 alert.setTitle("Error");
@@ -287,31 +307,32 @@ public class Controller {
     //When button ok pressed following code checks if data fields match, if match print label
     @FXML
     public void onButtonClicked() throws IOException {
-        if (harnessOne.getText() == null || harnessTwo.getText() == null || harnessThree.getText() == null || harnessFour.getText() == null) {
-            ats.setText("Empty field");
-            ats.setFont(Font.font("Arial", 20));
-            ats.setStyle("-fx-text-inner-color: blue;");
-        } else if (harnessAddPrefix(harnessOne.getText()).equals(harnessTwo.getText()) && harnessOne.getText().equals(harnessThree.getText()) && harnessOne.getText().equals(harnessFour.getText()) && harnessThree.getText().equals(harnessFour.getText())) {
-            ats.setText("OK");
-            ats.setFont(Font.font("Arial", 20));
-            ats.setStyle("-fx-text-inner-color: green;");
+        if (packingLabelOne.getText() == null || masterLabel.getText() == null || packingLabelTwo.getText() == null || packingLabelThree.getText() == null) {
+            outcome.setText("Empty field");
+            outcome.setFont(Font.font("Arial", 20));
+            outcome.setStyle("-fx-text-inner-color: blue;");
+        } else if (addPrefix(packingLabelOne.getText()).equals(masterLabel.getText()) && packingLabelOne.getText().equals(packingLabelTwo.getText())
+                && packingLabelOne.getText().equals(packingLabelThree.getText()) && packingLabelTwo.getText().equals(packingLabelThree.getText())) {
+            outcome.setText("OK");
+            outcome.setFont(Font.font("Arial", 20));
+            outcome.setStyle("-fx-text-inner-color: green;");
             scan = new Scanner(new File("lblconfig.txt"));
-            har = harnessOne.getText();
+            har = packingLabelOne.getText();
             tab = tabDisplay.getText();
             date = myDate.getText();
             time = myTime.getText();
-            readConfig();
+            loadSettingsAndPrint();
             write("log.txt", "a");
 
         } else {
-            ats.setText("NOK");
-            ats.setFont(Font.font("Arial", 20));
-            ats.setStyle("-fx-text-inner-color: red;");
+            outcome.setText("NOK");
+            outcome.setFont(Font.font("Arial", 20));
+            outcome.setStyle("-fx-text-inner-color: red;");
             write("log.txt", "a");
         }
     }
     //Reading line 2 and 4 from the config file
-    public void scanSettings() {
+    public void scanConfig() {
         scanConf.nextLine();
         confLine1 = scanConf.nextLine();
         scanConf.nextLine();
@@ -319,9 +340,9 @@ public class Controller {
     }
 
     //Reading label configuration txt file, and writing the label file then executing it via CMD
-    public void readConfig() throws IOException {
+    public void loadSettingsAndPrint(){
 
-        List<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<>();
 
         scan.nextLine();
         scan.nextLine();
@@ -340,6 +361,8 @@ public class Controller {
 
         }
 
+        try {
+
         File fileObject = new File("label.txt");
         fileObject.createNewFile();
         FileWriter fileW = new FileWriter("label.txt");
@@ -356,20 +379,32 @@ public class Controller {
         builder.redirectErrorStream(true);
         builder.start();
         System.out.println("Run");
+
+        }catch (IOException e){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            playError();
+            alert.setTitle("Print Error");
+            alert.setHeaderText("Printing failed check CMD processes in task manager");
+            alert.setContentText(e.getMessage());
+            Button okButton = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
+            okButton.setDefaultButton(false);
+            okButton.setOnAction((event) -> reset());
+            alert.showAndWait();
+        }
     }
 
 
     //writing log.txt file
     protected static String defaultLogFile = "log.txt";
 
-    public static void write(String s) throws IOException {
+    public static void write(String s) {
         write(defaultLogFile);
     }
 
     public void write(String f, String s) throws IOException {
-        String harness = harnessOne.getText();
-        String harness2 = harnessTwo.getText();
-        String outcome = ats.getText();
+        String harness = packingLabelOne.getText();
+        String harness2 = masterLabel.getText();
+        String outcome = this.outcome.getText();
         String date = myDate.getText();
         String time = myTime.getText();
         String tab = tabDisplay.getText();
