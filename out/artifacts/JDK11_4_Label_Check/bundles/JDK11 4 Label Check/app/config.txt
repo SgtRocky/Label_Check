@@ -1,4 +1,0 @@
-Harness Prefix
-FM
-COM Port
-COM4

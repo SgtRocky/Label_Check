@@ -340,9 +340,9 @@ public class Controller {
 
         }
 
-        File fileObject = new File("label2.txt");
+        File fileObject = new File("label.txt");
         fileObject.createNewFile();
-        FileWriter fileW = new FileWriter("label2.txt");
+        FileWriter fileW = new FileWriter("label.txt");
         BufferedWriter bufferW = new BufferedWriter(fileW);
 
         for (String s : lines) {
@@ -352,7 +352,7 @@ public class Controller {
         }
         bufferW.close();
 
-        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", ("COPY label2.txt " + confLine2));
+        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", ("COPY label.txt " + confLine2));
         builder.redirectErrorStream(true);
         builder.start();
         System.out.println("Run");
