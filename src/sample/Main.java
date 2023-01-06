@@ -10,12 +10,11 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
     @Override
-    public void start(Stage window) throws Exception{
+    public void start(Stage window) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
         window.setTitle("Label Checker ");
         window.setScene(new Scene(root, 1000, 800));
         window.show();
-
 
 
     }
