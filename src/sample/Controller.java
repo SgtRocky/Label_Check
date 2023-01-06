@@ -66,7 +66,6 @@ public class Controller {
 
         File configure = new File("config.txt");
         File labelConfigure = new File("lblconfig.txt");
-        scanConf = new Scanner(new File("config.txt"));
 
         //Checking if config file exists
         if (!configure.exists()) {
@@ -86,6 +85,8 @@ public class Controller {
             okButton.setDefaultButton(false);
             alert.showAndWait();
         }
+
+        scanConf = new Scanner(new File("config.txt"));
 
         scanSettings();
         harnessOne.setDisable(true);
@@ -309,7 +310,7 @@ public class Controller {
             write("log.txt", "a");
         }
     }
-
+    //Reading line 2 and 4 from the config file
     public void scanSettings() {
         scanConf.nextLine();
         confLine1 = scanConf.nextLine();
@@ -317,6 +318,7 @@ public class Controller {
         confLine2 = scanConf.nextLine();
     }
 
+    //Reading label configuration txt file, and writing the label file then executing it via CMD
     public void readConfig() throws IOException {
 
         List<String> lines = new ArrayList<String>();
@@ -357,6 +359,7 @@ public class Controller {
     }
 
 
+    //writing log.txt file
     protected static String defaultLogFile = "log.txt";
 
     public static void write(String s) throws IOException {
